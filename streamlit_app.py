@@ -138,6 +138,102 @@ async function fetchAPI(url, options = {}) {
 '''
 
 
+DEMO_BOOTSTRAP_JS = r'''
+function setText(id, value) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = value;
+}
+
+function injectDemoData() {
+  setText('stat-online', '3');
+  setText('stat-transit', '5');
+  setText('stat-alerts', '2');
+  setText('stat-temp', '1');
+  setText('alert-unprocessed-count', '2');
+  setText('alert-closed-count', '2');
+
+  const lineChart = document.getElementById('lineChart');
+  if (lineChart && !lineChart.children.length) {
+    lineChart.innerHTML = `
+      <div style="height:100%; display:flex; align-items:end; gap:14px; padding:22px 18px 12px; background:linear-gradient(180deg,#f8fbff,#fff); border-radius:8px;">
+        ${[92, 96, 98, 97, 99, 97, 100].map((v, i) => `<div style="flex:1; text-align:center; color:#667085; font-size:12px;"><div style="height:${v * 2.35}px; max-height:235px; background:linear-gradient(180deg,#4096ff,#9dccff); border-radius:8px 8px 0 0; box-shadow:0 6px 16px rgba(64,150,255,.18);"></div><div style="margin-top:8px;">${['00','03','06','09','12','15','18'][i]}:00</div></div>`).join('')}
+      </div>`;
+  }
+
+  const pieChart = document.getElementById('pieChart');
+  if (pieChart && !pieChart.children.length) {
+    pieChart.innerHTML = `
+      <div style="height:100%; display:flex; align-items:center; justify-content:center; gap:20px;">
+        <div style="width:150px; height:150px; border-radius:50%; background:conic-gradient(#ff4d4f 0 35%, #722ed1 35% 58%, #999 58% 80%, #fa8c16 80% 100%);"></div>
+        <div style="line-height:2; font-size:13px; color:#667085;">
+          <div><span style="color:#ff4d4f;">●</span> 温湿度异常 1</div>
+          <div><span style="color:#722ed1;">●</span> 震动异常 1</div>
+          <div><span style="color:#999;">●</span> 设备离线 1</div>
+          <div><span style="color:#fa8c16;">●</span> 路线偏离 1</div>
+        </div>
+      </div>`;
+  }
+
+  const deviceTbody = document.querySelector('#deviceTable tbody');
+  if (deviceTbody && !deviceTbody.children.length) {
+    deviceTbody.innerHTML = `
+      <tr><td>SN2026001</td><td>温湿度传感器</td><td>沪A·88990</td><td>冷藏箱A区</td><td>温度4.2℃ / 湿度82%</td><td><span class="status-tag status-normal">正常</span></td><td>2026-05-22 09:18:20</td><td class="operate-btn"><button>编辑</button></td></tr>
+      <tr><td>SN2026002</td><td>GPS车载终端</td><td>京B·77889</td><td>驾驶舱</td><td>定位正常</td><td><span class="status-tag status-normal">正常</span></td><td>2026-05-22 09:17:11</td><td class="operate-btn"><button>编辑</button></td></tr>
+      <tr><td>SN2026003</td><td>震动传感器</td><td>粤C·66778</td><td>货箱底部</td><td>震动阈值偏高</td><td><span class="status-tag status-error">异常</span></td><td>2026-05-22 09:12:45</td><td class="operate-btn"><button>编辑</button></td></tr>
+      <tr><td>SN2026004</td><td>RFID读卡器</td><td>苏D·55667</td><td>出入口</td><td>批次读取正常</td><td><span class="status-tag status-normal">正常</span></td><td>2026-05-22 09:16:07</td><td class="operate-btn"><button>编辑</button></td></tr>
+      <tr><td>SN2026005</td><td>温湿度传感器</td><td>浙E·33445</td><td>冷藏箱B区</td><td>温度9.8℃ / 湿度89%</td><td><span class="status-tag status-error">异常</span></td><td>2026-05-22 09:10:31</td><td class="operate-btn"><button>编辑</button></td></tr>`;
+  }
+
+  const pagination = document.getElementById('devicePagination');
+  if (pagination && !pagination.children.length) pagination.innerHTML = '<button class="active">1</button><button>2</button>';
+
+  const vehicles = document.getElementById('vehicleListContainer');
+  if (vehicles && !vehicles.children.length) {
+    vehicles.innerHTML = `
+      <div class="vehicle-item active"><h4><span><i class="fa-solid fa-truck" style="color:#4096ff;"></i> 沪A·88990</span><span class="status-tag status-normal">在途</span></h4><p><i class="fa-solid fa-user"></i> 司机: 张建 (13800138000)</p><p><i class="fa-solid fa-location-dot"></i> 当前: 济南市 (京沪高速K102段)</p></div>
+      <div class="vehicle-item"><h4><span><i class="fa-solid fa-truck" style="color:#4096ff;"></i> 京B·77889</span><span class="status-tag status-normal">在途</span></h4><p><i class="fa-solid fa-user"></i> 司机: 李实 (13912345678)</p><p><i class="fa-solid fa-location-dot"></i> 当前: 保定市 / 雄安新区</p></div>
+      <div class="vehicle-item"><h4><span><i class="fa-solid fa-truck" style="color:#4096ff;"></i> 粤C·66778</span><span class="status-tag status-warning">异常关注</span></h4><p><i class="fa-solid fa-user"></i> 司机: 王强 (13700001111)</p><p><i class="fa-solid fa-location-dot"></i> 当前: 东莞市 (广深沿江高速)</p></div>`;
+  }
+
+  const logisticsMap = document.getElementById('logisticsMap');
+  if (logisticsMap && !logisticsMap.children.length) {
+    logisticsMap.innerHTML = '<div style="height:100%; display:flex; align-items:center; justify-content:center; color:#4096ff; background:linear-gradient(135deg,#eef6ff,#f8fbff);"><div style="text-align:center;"><i class="fa-solid fa-route" style="font-size:42px;"></i><br><b>运输路线演示地图</b><br><span style="color:#667085;">北京 → 济南 → 上海，车辆当前位于济南段</span></div></div>';
+  }
+
+  const alertsTbody = document.querySelector('#alertsTable tbody');
+  if (alertsTbody && !alertsTbody.children.length) {
+    alertsTbody.innerHTML = `
+      <tr><td><b>#1</b></td><td style="font-family:monospace; color:#4096ff; font-weight:bold;">SN2026005</td><td>温湿度异常</td><td>2026-05-22 09:10:31</td><td><span class="status-tag status-error">待处理</span></td><td><button class="btn-add" style="padding:6px 12px; font-size:0.85rem; background:#4096ff;">派单处理</button></td></tr>
+      <tr><td><b>#2</b></td><td style="font-family:monospace; color:#4096ff; font-weight:bold;">SN2026003</td><td>震动异常</td><td>2026-05-22 09:12:45</td><td><span class="status-tag status-error">待处理</span></td><td><button class="btn-add" style="padding:6px 12px; font-size:0.85rem; background:#4096ff;">派单处理</button></td></tr>
+      <tr><td><b>#3</b></td><td style="font-family:monospace; color:#4096ff; font-weight:bold;">SN2026006</td><td>设备离线</td><td>2026-05-22 08:55:02</td><td><span class="status-tag status-closed">已解决</span></td><td><span style="color:#ccc; font-size:0.85rem;">已归档</span></td></tr>`;
+  }
+
+  const overview = document.getElementById('warehouse-overview');
+  if (overview && !overview.children.length) {
+    overview.innerHTML = `
+      <div class="stat-card" style="flex-direction:column; align-items:flex-start; min-width:250px; border-top:4px solid #4096ff;"><h4>贵州长顺总仓</h4><div style="width:100%;">库存 2500 件<div class="progress-bar"><div class="progress-inner" style="width:100%; background:#43b581;"></div></div></div><div style="width:100%;">运力 15 辆<div class="progress-bar"><div class="progress-inner" style="width:75%;"></div></div></div></div>
+      <div class="stat-card" style="flex-direction:column; align-items:flex-start; min-width:250px; border-top:4px solid #ff4d4f;"><h4>上海青浦前置仓</h4><div style="width:100%;">库存 200 件<div class="progress-bar"><div class="progress-inner" style="width:10%; background:#ff4d4f;"></div></div></div><div style="width:100%;">运力 2 辆<div class="progress-bar"><div class="progress-inner" style="width:10%; background:#ff4d4f;"></div></div></div></div>`;
+  }
+
+  const warehouseTbody = document.querySelector('#warehouseTable tbody');
+  if (warehouseTbody && !warehouseTbody.children.length) {
+    warehouseTbody.innerHTML = `
+      <tr><td>WH-0001</td><td>贵州长顺总仓</td><td>106.4500, 26.0300</td><td>2500</td><td>15</td><td><span class="status-tag status-normal">运行平稳</span></td></tr>
+      <tr><td>WH-0002</td><td>上海青浦前置仓</td><td>121.1243, 31.1505</td><td>200</td><td>2</td><td><span class="status-tag status-error">资源告急</span></td></tr>
+      <tr><td>WH-0003</td><td>成都双流冷链仓</td><td>103.9237, 30.5744</td><td>900</td><td>6</td><td><span class="status-tag status-normal">运行平稳</span></td></tr>`;
+  }
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', injectDemoData, { once: true });
+} else {
+  injectDemoData();
+}
+setTimeout(injectDemoData, 300);
+setTimeout(injectDemoData, 1200);
+'''
+
+
 def build_page() -> str:
     html = (BASE_DIR / "static" / "index.html").read_text(encoding="utf-8")
     js = (BASE_DIR / "static" / "app.js").read_text(encoding="utf-8")
@@ -166,6 +262,7 @@ window.addEventListener('load', bootLogisticsApp, { once: true });
         """.strip(),
     )
     html = html.replace('<script src="/static/app.js?v=20260307_fix1"></script>', f"<script>{js}</script>")
+    html = html.replace("</body>", f"<script>{DEMO_BOOTSTRAP_JS}</script></body>")
     return html
 
 
