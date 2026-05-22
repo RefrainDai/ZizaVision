@@ -145,8 +145,27 @@ def build_page() -> str:
         "async function fetchAPI(url, options = {}) {\n    const res = await fetch(url, options);\n    if (!res.ok) throw new Error(\"API 请求失败\");\n    return await res.json();\n}",
         MOCK_API_JS,
     )
+    js = js.replace(
+        "window.onload = () => { loadDashboardStats(); loadCharts(); loadTable(); loadTransport(); };",
+        """
+function bootLogisticsApp() {
+    if (window.__logisticsAppBooted) return;
+    window.__logisticsAppBooted = true;
+    loadDashboardStats();
+    loadCharts();
+    loadTable();
+    loadTransport();
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', bootLogisticsApp, { once: true });
+} else {
+    bootLogisticsApp();
+}
+window.addEventListener('load', bootLogisticsApp, { once: true });
+        """.strip(),
+    )
     html = html.replace('<script src="/static/app.js?v=20260307_fix1"></script>', f"<script>{js}</script>")
-    html = html.replace("body { background: #f5f7fa; color: #333; overflow: hidden; height: 100vh; }", "body { background: #f5f7fa; color: #333; overflow: hidden; height: 100vh; }")
     return html
 
 
